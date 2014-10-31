@@ -1,6 +1,6 @@
 #! /usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""LR-MVE - WIP thingy for JimbobJeffers (for now...).
+"""LR-MVE - Mass value editor for when manually editing .GDB files.
 
 Created 2014 Triangle717
 <http://Triangle717.WordPress.com/>
@@ -82,7 +82,7 @@ class LRMVE(object):
     def _joinLine(self,  parts, pos):
         """TODO.
 
-        @param {array} parts TODO.
+        @param {array} parts The line sections to be merged.
         @param {integer} pos The line number to update with the changed value.
         @return {boolean} Always returns True.
         """
