@@ -13,7 +13,6 @@ import os
 import sys
 
 appName = "GDBump"
-appLongName = "LR Mass Value Editor"
 version = "0.5.5"
 creator = "Triangle717"
 

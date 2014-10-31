@@ -48,7 +48,7 @@ setup(
     name=const.appName,
     version=const.version,
     author=const.creator,
-    description=const.appLongName,
+    description=const.appName,
     license="The MIT License",
     options={"build_exe": build_exe_options},
     executables=[Executable("GDBump.py",

@@ -1,6 +1,6 @@
 #! /usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""LR MVE - Mass value editor for when manually editing .GDB files.
+"""GDBump - Mass value editor for when manually editing .GDB files.
 
 Created 2014 Triangle717
 <http://Triangle717.WordPress.com/>
@@ -16,12 +16,12 @@ import sys
 
 import constants as const
 
-__all__ = ("LRMVE",  "commandLine", "main")
+__all__ = ("GDBump",  "commandLine", "main")
 
 
-class LRMVE(object):
+class GDBump(object):
 
-    """Main LR MVE class."""
+    """Main GDBump class."""
 
     def __init__(self, axis, changeValue, inFile, outFile):
         """Initialize public and private properties.
@@ -209,14 +209,14 @@ Output file: Destination text file for changed values.
 
 def main():
     """Entry point for entire program."""
-    print("\n{0}".format(const.appLongName))
+    print("\n{0}".format(const.appName))
     arguments = commandLine()
     if arguments:
-        lrmve = LRMVE(arguments[0], arguments[1], arguments[2], arguments[3])
-        lrmve.changeValues()
-        lrmve.writeFile()
+        gdbump = GDBump(arguments[0], arguments[1], arguments[2], arguments[3])
+        gdbump.changeValues()
+        gdbump.writeFile()
         print('\n{0} updated "{1}" values saved to {2}'.format(
-              lrmve.timesChanged, arguments[0], arguments[3]))
+              gdbump.timesChanged, arguments[0], arguments[3]))
 
 
 if __name__ == "__main__":
