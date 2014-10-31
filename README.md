@@ -6,9 +6,11 @@
 ```
 GDBump.exe [Axis] [Change value] [Input file] [Output file]
 
-Axis: The axis you want to edit. Possible values are `x`, `y`, `z`, `tu`, `tv`, `r`, `g`, `b`, and `a`.
+Axis: The axis you want to edit.
+Possible values are `x`, `y`, `z`, `tu`, `tv`, `r`, `g`, `b`, and `a`.
 Change value: The positive or negative value of your desired change.
-Input file: Text file containing decoded GDB format structure, as decompiled using the LR1 Binary Editor.
+Input file: Text file containing decoded GDB format structure,
+as decompiled using the LR1 Binary Editor.
 Output file: Destination text file for changed values.
 ```
 
