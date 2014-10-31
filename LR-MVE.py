@@ -161,7 +161,7 @@ Change value: The positive or negative value of your desired change.
 Input file: Text file containing decoded GDB format structure,
     as decompiled using the LR Binary File Viewer.
 Output file: Destination text file for changed values.
-""".format(os.path.basename(__file__)))
+""".format(const.exeName))
         return False
 
     # No arguments were given

@@ -105,6 +105,6 @@ target/
 # Unique
 # =========================
 
-bin
+[Bb]in
 Testing/
 Archives/
