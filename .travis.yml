@@ -14,4 +14,4 @@ script:
   - pep257 setup.py --explain
 
   # Run unit tests
-  - python tests/YAxis-test.py
+  - python runtests.py
