@@ -5,5 +5,10 @@ python:
 
 install: pip install -r requirements.txt
 script:
-  - flake8 --max-complexity 10 .
-  - pep257 . --match='(?!test_|__init__).*\.py' --explain
+  - flake8 LRMVE.py
+  - flake8 constants.py
+  - flake8 setup.py
+  - flake8 ./tests
+  - pep257 LRMVE.py --explain
+  - pep257 constants.py --explain
+  - pep257 setup.py --explain
