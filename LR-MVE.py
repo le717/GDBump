@@ -16,6 +16,9 @@ import sys
 
 import constants as const
 
+__all__ = ("LRMVE",  "commandLine", "main")
+
+
 class LRMVE(object):
 
     """Main LR MVE class."""
