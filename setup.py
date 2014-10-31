@@ -51,6 +51,6 @@ setup(
     description=const.appLongName,
     license="The MIT License",
     options={"build_exe": build_exe_options},
-    executables=[Executable("LR-MVE.py",
-                 targetName="LR-MVE.exe")]
+    executables=[Executable("LRMVE.py",
+                 targetName="LRMVE.exe")]
 )
