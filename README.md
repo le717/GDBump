@@ -14,6 +14,9 @@ as decompiled using the LR1 Binary Editor.
 Output file: Destination text file for changed values.
 ```
 
+# Downloads ##
+All downloads are on the [Releases](https://github.com/le717/GDBump/releases) page.
+
 ## License ##
 [The MIT License](LICENSE)
 
