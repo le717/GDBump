@@ -1,6 +1,6 @@
 #! /usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""LR-MVE - Mass value editor for when manually editing .GDB files.
+"""LR MVE - Mass value editor for when manually editing .GDB files.
 
 Created 2014 Triangle717
 <http://Triangle717.WordPress.com/>
@@ -14,6 +14,7 @@ import os
 import re
 import sys
 
+import constants as const
 
 class LRMVE(object):
 
@@ -150,10 +151,9 @@ def commandLine():
     """
     def cmdHelp():
         """Print command-line arguments help text."""
-        print("""LR-MVE Command-line Usage
+        print("""Command-line Usage Help:
 
 {0} [Axis] [Change value] [Input file] [Output file]
-
 
 Axis: The axis you want to edit.
     Values are x, y, z, tu, tv, r, g, b, and a.
@@ -190,13 +190,13 @@ Output file: Destination text file for changed values.
 
 def main():
     """Entry point for entire program."""
-    print("\nLEGO Racers - Mass Value Editor\n")
+    print("\n{0}".format(const.appLongName))
     arguments = commandLine()
     if arguments:
         lrmve = LRMVE(arguments[0], arguments[1], arguments[2], arguments[3])
         lrmve.changeValues()
         lrmve.writeFile()
-        print('{0} updated "{1}" values saved to {2}'.format(
+        print('\n{0} updated "{1}" values saved to {2}'.format(
               lrmve.timesChanged, arguments[0], arguments[3]))
 
 
