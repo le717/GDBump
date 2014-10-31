@@ -1,22 +1,12 @@
 #! /usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""LR-MVE - WIP thingy for JimbobJeffers.
+"""LR-MVE - WIP thingy for JimbobJeffers (for now...).
 
 Created 2014 Triangle717
 <http://Triangle717.WordPress.com/>
 
-LR-MVE is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-LR-MVE is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with LR-MVE. If not, see <http://www.gnu.org/licenses/>.
+Licensed under The MIT License
+<http://opensource.org/licenses/MIT/>
 
 """
 
@@ -29,7 +19,8 @@ class LRMVE(object):
 
     def __init__(self, axis, changeValue, inFile, outFile):
 
-        self.axis = axis
+        self.axis = axis.lower()
+        self.changeValue = self._convertToNumber(changeValue)
         self.inFile = os.path.abspath(inFile)
         self.outFile = os.path.abspath(outFile)
         self.timesChanged = 0
@@ -37,11 +28,17 @@ class LRMVE(object):
         self.__prefixRegex = re.compile(r"(float|byte)")
         self.__commentRegex = re.compile(r"//.*")
 
-        # Determine if the multipler is an integer or float
-        if changeValue.find(".") > -1:
-            self.changeValue = float(changeValue)
+    def _convertToNumber(self, value):
+        """Determine if a number is an integer or float.
+
+        @param {string} value The string to be converted to a number.
+        @return {number} An integer or float.
+        """
+        if value.find(".") > -1:
+            value = float(value)
         else:
-            self.changeValue = int(changeValue)
+            value = int(value)
+        return value
 
     def _readFile(self):
         """Write the source file.
@@ -77,8 +74,8 @@ class LRMVE(object):
                 comment = commentMatch.group(0)
                 value = value.replace(comment, "")
 
-            # Make it an integer for math(s) operations
-            value = int(value)
+            # Make it a number for math(s) operations
+            value = self._convertToNumber(value)
             return [text, value, comment]
         return False
 
@@ -128,12 +125,12 @@ class LRMVE(object):
             parts = self._splitLine(self.__fileContent[i])
 
             # Make sure we are on the correct line before math(s)
-            if i == positions[self.axis]:
+            if parts and i == positions[self.axis]:
                 parts[1] = _doMaths(parts[1], i)
 
-            # Merge the parts back together
-            self._joinLine(parts, i)
-            self.timesChanged += 1
+                # Merge the parts back together
+                self._joinLine(parts, i)
+                self.timesChanged += 1
 
         # Now do the rest of the lines using the same process
         for i in range(9 + positions[self.axis], len(self.__fileContent), 9):
@@ -199,8 +196,8 @@ def main():
         lrmve = LRMVE(arguments[0], arguments[1], arguments[2], arguments[3])
         lrmve.changeValues()
         lrmve.writeFile()
-        print("{0} updated values saved to {1}".format(
-              lrmve.timesChanged, arguments[3]))
+        print('{0} updated "{1}" values saved to {2}'.format(
+              lrmve.timesChanged, arguments[0], arguments[3]))
 
 
 if __name__ == "__main__":
