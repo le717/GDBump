@@ -1,4 +1,4 @@
-# LR MVE [![Build Status](https://travis-ci.org/le717/LR-MVE.svg)](https://travis-ci.org/le717/LR-MVE) # #
+# LR MVE [![Build Status](https://travis-ci.org/le717/LR-MVE.svg)](https://travis-ci.org/le717/LR-MVE) #
 
 _To be written._
 
