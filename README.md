@@ -1,6 +1,6 @@
 # GDBump [![Build Status](https://travis-ci.org/le717/GDBump.svg)](https://travis-ci.org/le717/GDBump) #
 
-**GDBump** is a LEGO&reg; Racers modding tool designed to speed up the process of modifying GDB files. It enables users to increase or decrease a specific value of all vertex entries in a file - for example, the Y axis - through a simple interface, instead of having to spend a lengthy amount of time doing it manually. This is useful for moving about objects in the game, particularly those made by the developers that can be difficult to edit otherwise. GDBump is best used in combanation with the [LR1 Binary Editor](http://www.rockraidersunited.com/topic/4367-binary-file-editor/).
+**GDBump** is a LEGO&reg; Racers modding tool designed to speed up the process of modifying GDB files. It enables users to increase or decrease a specific value of all vertex entries in a file - for example, the Y axis - through a simple interface, instead of having to spend a lengthy amount of time doing it manually. This is useful for moving about objects in the game, particularly those made by the developers that can be difficult to edit otherwise. GDBump is best used in combination with the [LR1 Binary Editor](http://www.rockraidersunited.com/topic/4367-binary-file-editor/).
 
 ## Usage ##
 ```
