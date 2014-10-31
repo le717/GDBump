@@ -100,3 +100,11 @@ docs/_build/
 
 # PyBuilder
 target/
+
+
+# Unique
+# =========================
+
+bin
+Testing/
+Archives/
