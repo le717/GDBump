@@ -12,3 +12,6 @@ script:
   - pep257 GDBump.py --explain
   - pep257 constants.py --explain
   - pep257 setup.py --explain
+
+  # Run unit tests
+  - python runtests.py
