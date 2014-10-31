@@ -39,7 +39,10 @@ else:
 if not os.path.exists(destfolder):
     os.makedirs(destfolder)
 
-build_exe_options = { "build_exe": destfolder }
+build_exe_options = {
+    "build_exe": destfolder,
+    "optimize": 2
+}
 
 setup(
     name=const.appName,
