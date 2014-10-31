@@ -18,8 +18,18 @@ import constants as const
 
 class LRMVE(object):
 
-    def __init__(self, axis, changeValue, inFile, outFile):
+    """Main LR MVE class."""
 
+    def __init__(self, axis, changeValue, inFile, outFile):
+        """Initialize public and private properties.
+
+        Exposes five public properties:
+        * axis: The user's desired axis to edit, converted to lowercase.
+        * changeValue: The value the user wishes to increase or decrease by.
+        * inFile: The user's input file containing the values to edit.
+        * outFile: The user's desired destination file.
+        * timesChanges: An integer stating the number of edits performed.
+        """
         self.axis = axis.lower()
         self.changeValue = self._convertToNumber(changeValue)
         self.inFile = os.path.abspath(inFile)
@@ -42,7 +52,7 @@ class LRMVE(object):
         return value
 
     def _readFile(self):
-        """Write the source file.
+        """Read the source file.
 
         @return {array} Array contaning contents of source file.
         """
@@ -60,7 +70,13 @@ class LRMVE(object):
         return True
 
     def _splitLine(self, line):
+        """Split a line into seperate parts suitable for editing.
 
+        @param {string} line The line to be split.
+        @return {list|Boolean} Three index list containing
+            the line's text, value, and comment (if any),
+            False if the line could not be split.
+        """
         # Confirm the line starts correctly
         match = self.__prefixRegex.search(line)
         if match:
@@ -81,7 +97,7 @@ class LRMVE(object):
         return False
 
     def _joinLine(self,  parts, pos):
-        """TODO.
+        """Join the split parts of a line back together.
 
         @param {array} parts The line sections to be merged.
         @param {integer} pos The line number to update with the changed value.
@@ -146,7 +162,7 @@ class LRMVE(object):
 def commandLine():
     """Command-line arguments parser.
 
-    @return {tuple|Boolean} A four index tuple containing the parameters given,
+    @return {tuple|boolean} A four index tuple containing the parameters given,
         False if all arguments were not passed or the help was invoked.
     """
     def cmdHelp():
@@ -159,7 +175,7 @@ Axis: The axis you want to edit.
     Values are x, y, z, tu, tv, r, g, b, and a.
 Change value: The positive or negative value of your desired change.
 Input file: Text file containing decoded GDB format structure,
-    as decompiled using the LR Binary File Viewer.
+    as decompiled using the LR1 Binary Editor.
 Output file: Destination text file for changed values.
 """.format(const.exeName))
         return False
