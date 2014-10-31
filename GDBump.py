@@ -26,18 +26,20 @@ class GDBump(object):
     def __init__(self, axis, changeValue, inFile, outFile):
         """Initialize public and private properties.
 
-        Exposes five public properties:
+        Exposes six public properties:
         * axis: The user's desired axis to edit, converted to lowercase.
         * changeValue: The value the user wishes to increase or decrease by.
         * inFile: The user's input file containing the values to edit.
         * outFile: The user's desired destination file.
         * timesChanges: An integer stating the number of edits performed.
+        * linesChanged: An array containing the changed lines.
         """
         self.axis = axis.lower()
         self.changeValue = self._convertToNumber(changeValue)
         self.inFile = os.path.abspath(inFile)
         self.outFile = os.path.abspath(outFile)
         self.timesChanged = 0
+        self.linesChanged = []
         self.__fileContent = self._readFile()
         self.__prefixRegex = re.compile(r"(float|byte)")
         self.__commentRegex = re.compile(r"//.*")
@@ -48,6 +50,9 @@ class GDBump(object):
         @param {string} value The string to be converted to a number.
         @return {number} An integer or float.
         """
+        if type(value) in (int, float):
+            return value
+
         if value.find(".") > -1:
             value = float(value)
         else:
@@ -104,7 +109,7 @@ class GDBump(object):
 
         @param {array} parts The line sections to be merged.
         @param {integer} pos The line number to update with the changed value.
-        @return {boolean} Always returns True.
+        @return {boolean} Returns the joined line.
         """
         # Join the parts
         newLine = "{0}{1}".format(parts[0], parts[1])
@@ -118,7 +123,7 @@ class GDBump(object):
 
         # Update the file contents with the new line
         self.__fileContent[pos] = newLine
-        return True
+        return newLine
 
     def changeValues(self):
         """TODO.
@@ -149,16 +154,18 @@ class GDBump(object):
                 parts[1] = _doMaths(parts[1], i)
 
                 # Merge the parts back together
-                self._joinLine(parts, i)
+                newLine = self._joinLine(parts, i)
                 self.timesChanged += 1
+                self.linesChanged.append(newLine)
 
         # Now do the rest of the lines using the same process
         for i in range(9 + positions[self.axis], len(self.__fileContent), 9):
             parts = self._splitLine(self.__fileContent[i])
             if parts:
                 parts[1] = _doMaths(parts[1], i)
-                self._joinLine(parts, i)
+                newLine = self._joinLine(parts, i)
                 self.timesChanged += 1
+                self.linesChanged.append(newLine)
         return True
 
 
