@@ -1,6 +1,6 @@
 #! /usr/bin/python3.4-32
 # -*- coding: utf-8 -*-
-"""LR MVE - Mass value editor for when manually editing .GDB files.
+"""GDBump - Mass value editor for when manually editing .GDB files.
 
 Created 2014 Triangle717
 <http://Triangle717.WordPress.com/>
@@ -51,6 +51,6 @@ setup(
     description=const.appLongName,
     license="The MIT License",
     options={"build_exe": build_exe_options},
-    executables=[Executable("LRMVE.py",
-                 targetName="LRMVE.exe")]
+    executables=[Executable("GDBump.py",
+                 targetName="GDBump.exe")]
 )
