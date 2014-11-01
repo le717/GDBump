@@ -45,7 +45,7 @@ inFile = os.path.join(testDir,  "y-axis.txt")
 outFile = os.path.join(testDir,  "y-axis-changed.txt")
 
 # Create a test runner instance
-yAxisTest = TestRunner("y", "20", inFile, outFile)
+yAxisTest = TestRunner("y", 20, inFile, outFile)
 
 # Value addition
 yAxisTest.validateLines((0, -30, 0, -40))
