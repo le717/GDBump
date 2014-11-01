@@ -15,33 +15,43 @@ import sys
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import GDBump
 
-def validateLines(shouldBe):
-    """Confirm the values were correctly changed."""
-    print()
-    for i in range(0, len(gdbump.linesChanged)):
-        line = gdbump._splitLine(gdbump.linesChanged[i])[1]
-        value = shouldBe[i]
 
-        print("{0} should be {1}".format(line, value))
-        assert line == value, False
-    print("\nAll values were correctly changed.")
+class TestRunner(object):
+
+    def __init__(self, axis, changeValue, inFile, outFile):
+        self.axis = axis
+        self.changeValue = changeValue
+        self.inFile = inFile
+        self.outFile = outFile
+
+        # Create an instance of GDBump
+        self.gdbump = GDBump.GDBump(axis, changeValue, inFile, outFile)
+        self.gdbump.changeValues()
+
+    def validateLines(self, shouldEqual):
+        """Confirm the values were correctly changed."""
+        print()
+        for i in range(0, len(self.gdbump.linesChanged)):
+            line = self.gdbump._splitLine(self.gdbump.linesChanged[i])[1]
+            value = shouldEqual[i]
+
+            print("{0} should be {1}".format(line, value))
+            assert line == value, False
+        print("\nAll values were correctly changed.")
 
 
-axis = "y"
-changeValue = "20"
 testDir = os.path.join(os.getcwd(), "files")
 inFile = os.path.join(testDir,  "y-axis.txt")
 outFile = os.path.join(testDir,  "y-axis-changed.txt")
 
-# Create an instance of GDBump
-gdbump = GDBump.GDBump(axis, changeValue, inFile, outFile)
-gdbump.changeValues()
+# Create a test runner instance
+yAxisTest = TestRunner("y", "20", inFile, outFile)
 
 # Value addition
-validateLines((0, -30, 0, -40))
+yAxisTest.validateLines((0, -30, 0, -40))
 
 # Write the file and confirm it's length
-gdbump.writeFile()
+yAxisTest.gdbump.writeFile()
 if os.path.isfile(outFile):
     with open(outFile, "rt") as f:
         numOfLines = f.readlines()[:]
