@@ -35,12 +35,12 @@ class GDBump(object):
         * linesChanged: An array containing the changed lines.
         """
         self.axis = axis.lower()
-        self.__doReplace = (lambda cv: cv.startswith("~"))(changeValue)
         self.changeValue = self._convertToNumber(changeValue)
         self.inFile = os.path.abspath(inFile)
         self.outFile = os.path.abspath(outFile)
         self.timesChanged = 0
         self.linesChanged = []
+        self.__doReplace = False
         self.__fileContent = self._readFile()
         self.__prefixRegex = re.compile(r"(float|byte)")
         self.__commentRegex = re.compile(r"//.*")
@@ -65,6 +65,11 @@ Error!
 The axis chosen ("{0}") is not a valid axis!""".format(self.axis))
             raise SystemExit(1)
 
+
+    def _displayError(self, msg):
+
+        return False
+
     def _convertToNumber(self, value):
         """Determine if a number is an integer or float.
 
@@ -76,8 +81,9 @@ The axis chosen ("{0}") is not a valid axis!""".format(self.axis))
             return value
 
         # Remove the replace operator
-        if self.__doReplace:
+        if value.startswith("~"):
             value = value.lstrip("~")
+            self.__doReplace = True
 
         # Convert it to the proper type
         if value.find(".") > -1:
