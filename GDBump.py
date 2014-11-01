@@ -55,6 +55,16 @@ class GDBump(object):
                             "a": 9
                            }
 
+        # Confirm the desired axis is valid
+        try:
+            self.__positions[self.axis]
+        # That is not a valid axis
+        except KeyError:
+            print("""
+Error!
+The axis chosen ("{0}") is not a valid axis!""".format(self.axis))
+            raise SystemExit(1)
+
     def _convertToNumber(self, value):
         """Determine if a number is an integer or float.
 
@@ -207,9 +217,7 @@ Output file: Destination text file for changed values.
         return False
 
     # No arguments were given
-    try:
-        sys.argv[1]
-    except IndexError:
+    if len(sys.argv) == 1:
         cmdHelp()
         return False
 
@@ -240,6 +248,7 @@ def main():
         gdbump.writeFile()
         print('\n{0} updated "{1}" values saved to {2}'.format(
               gdbump.timesChanged, arguments[0], arguments[3]))
+        raise SystemExit(0)
 
 
 if __name__ == "__main__":
