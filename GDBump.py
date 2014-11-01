@@ -35,6 +35,7 @@ class GDBump(object):
         * linesChanged: An array containing the changed lines.
         """
         self.axis = axis.lower()
+        self.__doReplace = (lambda cv: cv.startswith("~"))(changeValue)
         self.changeValue = self._convertToNumber(changeValue)
         self.inFile = os.path.abspath(inFile)
         self.outFile = os.path.abspath(outFile)
@@ -43,6 +44,16 @@ class GDBump(object):
         self.__fileContent = self._readFile()
         self.__prefixRegex = re.compile(r"(float|byte)")
         self.__commentRegex = re.compile(r"//.*")
+        self.__positions = {"x": 1,
+                            "y": 2,
+                            "z": 3,
+                            "tu": 4,
+                            "tv": 5,
+                            "r": 6,
+                            "g": 7,
+                            "b": 8,
+                            "a": 9
+                           }
 
     def _convertToNumber(self, value):
         """Determine if a number is an integer or float.
@@ -50,9 +61,15 @@ class GDBump(object):
         @param {string} value The string to be converted to a number.
         @return {number} An integer or float.
         """
+        # It is already a number
         if type(value) in (int, float):
             return value
 
+        # Remove the replace operator
+        if self.__doReplace:
+            value = value.lstrip("~")
+
+        # Convert it to the proper type
         if value.find(".") > -1:
             value = float(value)
         else:
@@ -82,7 +99,7 @@ class GDBump(object):
 
         @param {string} line The line to be split.
         @return {list|Boolean} Three index list containing
-            the line's text, value, and comment (if any),
+            the line's text, value, and comment (if any).
             False if the line could not be split.
         """
         # Confirm the line starts correctly
@@ -130,28 +147,24 @@ class GDBump(object):
 
         @return {boolean} Always returns True.
         """
-        def _doMaths(value, i):
-            """Perform the math(s) operation."""
-            return value + self.changeValue
+        def _doMaths(value):
+            """Perform the math(s) operation.
 
-        positions = {"x": 1,
-                     "y": 2,
-                     "z": 3,
-                     "tu": 4,
-                     "tv": 5,
-                     "r": 6,
-                     "g": 7,
-                     "b": 8,
-                     "a": 9
-                     }
+            @param {number} value The value to be changed or replaced.
+            @return {number} The revised value.
+            """
+            # The replace operator was used
+            if self.__doReplace:
+                return self.changeValue
+            return value + self.changeValue
 
         # Scan just the first 10 lines
         for i in range(1, 10):
             parts = self._splitLine(self.__fileContent[i])
 
             # Make sure we are on the correct line before math(s)
-            if parts and i == positions[self.axis]:
-                parts[1] = _doMaths(parts[1], i)
+            if parts and i == self.__positions[self.axis]:
+                parts[1] = _doMaths(parts[1])
 
                 # Merge the parts back together
                 newLine = self._joinLine(parts, i)
@@ -159,10 +172,11 @@ class GDBump(object):
                 self.linesChanged.append(newLine)
 
         # Now do the rest of the lines using the same process
-        for i in range(9 + positions[self.axis], len(self.__fileContent), 9):
+        for i in range(9 + self.__positions[self.axis],
+                       len(self.__fileContent), 9):
             parts = self._splitLine(self.__fileContent[i])
             if parts:
-                parts[1] = _doMaths(parts[1], i)
+                parts[1] = _doMaths(parts[1])
                 newLine = self._joinLine(parts, i)
                 self.timesChanged += 1
                 self.linesChanged.append(newLine)
@@ -184,6 +198,8 @@ def commandLine():
 Axis: The axis you want to edit.
     Values are x, y, z, tu, tv, r, g, b, and a.
 Change value: The positive or negative value of your desired change.
+    Prefixing the value with a tilde (~) will replace all values
+    on the chosen axis with the value instead of editing them.
 Input file: Text file containing decoded GDB format structure,
     as decompiled using the LR1 Binary Editor.
 Output file: Destination text file for changed values.
