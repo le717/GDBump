@@ -53,7 +53,7 @@ class GDBump(object):
                             "g": 7,
                             "b": 8,
                             "a": 9
-                           }
+                            }
 
         # Confirm the desired axis is valid
         try:
