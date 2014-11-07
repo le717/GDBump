@@ -16,7 +16,7 @@ import sys
 
 import constants as const
 
-__all__ = ("GDBump",  "commandLine", "main")
+__all__ = ("GDBump", "commandLine", "main")
 
 
 class GDBump(object):
@@ -26,13 +26,15 @@ class GDBump(object):
     def __init__(self, axis, changeValue, inFile, outFile):
         """Initialize public and private properties.
 
-        Exposes six public properties:
+        Exposes six public properties and two public methods:
         * axis: The user's desired axis to edit, converted to lowercase.
         * changeValue: The value the user wishes to increase or decrease by.
         * inFile: The user's input file containing the values to edit.
         * outFile: The user's desired destination file.
         * timesChanges: An integer stating the number of edits performed.
         * linesChanged: An array containing the changed lines.
+        * processFile(): TODO.
+        * writeFile(): TODO.
         """
         self.axis = axis.lower()
         self.changeValue = self._convertToNumber(changeValue)
@@ -148,7 +150,7 @@ The axis chosen ("{0}") is not a valid axis!""".format(self.axis))
 
         # Restore the comment if needed
         if parts[2] is not None:
-            newLine = "{0} {1}".format(newLine, parts[2])
+            newLine = "{0}    {1}".format(newLine, parts[2])
 
         # Restore the indentation and trailing new line
         newLine = "\t{0}\n".format(newLine)
@@ -157,27 +159,50 @@ The axis chosen ("{0}") is not a valid axis!""".format(self.axis))
         self.__fileContent[pos] = newLine
         return newLine
 
-    def changeValues(self):
-        """TODO.
-
-        @return {boolean} Always returns True.
-        """
-        def _doMaths(text, value):
+    def _changeValue(self, text, value, structPos=None):
             """Perform the math(s) operation.
+
+            Any value requirements for the .GDB format will also be perfomed,
+            including forcing byte values to be integers
+            and clamping RGBA values into valid ranges.
+            This may produce unexpected results for you,
+            but this is expected behavior for the game.
 
             @param {string} text The format structure the value belonds to.
             @param {number} value The value to be changed or replaced.
+            @param {number} structPos Optional, TODO.
             @return {number} The revised value.
             """
             # The replace operator was used
             if self.__doReplace:
                 return self.changeValue
 
-            # Bytes must be integers regardless
+            # Byte values must be integers regardless
             elif text == "(byte)":
-                return int(value + self.changeValue)
+                newValue = int(value + self.changeValue)
+
+            # Python is cool by subtracting values with the plus sign
+            # if the second addend is a negative number. :D
             else:
-                return value + self.changeValue
+                newValue = value + self.changeValue
+
+            # We are editing RGBA color values
+            if structPos is not None:
+
+                # Clamp RGB (and alpha, oddly) values
+                # between 0-255 inclusive
+                if (structPos >= 6 and structPos <= 9):
+                    if newValue > 255:
+                        newValue = 255
+                    elif newValue < 0:
+                        newValue = 0
+            return newValue
+
+    def processFile(self):
+        """TODO.
+
+        @return {boolean} Always returns True.
+        """
 
         # Scan just the first 10 lines
         for i in range(1, 10):
@@ -185,7 +210,7 @@ The axis chosen ("{0}") is not a valid axis!""".format(self.axis))
 
             # Make sure we are on the correct line before math(s)
             if parts and i == self.__positions[self.axis]:
-                parts[1] = _doMaths(parts[0], parts[1])
+                parts[1] = self._changeValue(parts[0], parts[1])
 
                 # Merge the parts back together
                 newLine = self._joinLine(parts, i)
@@ -193,11 +218,12 @@ The axis chosen ("{0}") is not a valid axis!""".format(self.axis))
                 self.linesChanged.append(newLine)
 
         # Now do the rest of the lines using the same process
-        for i in range(9 + self.__positions[self.axis],
-                       len(self.__fileContent), 9):
+        structPos = self.__positions[self.axis]
+        for i in range(9 + structPos, len(self.__fileContent), 9):
             parts = self._splitLine(self.__fileContent[i])
+
             if parts:
-                parts[1] = _doMaths(parts[0], parts[1])
+                parts[1] = self._changeValue(parts[0], parts[1], structPos)
                 newLine = self._joinLine(parts, i)
                 self.timesChanged += 1
                 self.linesChanged.append(newLine)
@@ -227,23 +253,19 @@ Output file: Destination text file for changed values.
 """.format(const.exeName))
         return False
 
-    # No arguments were given
-    if len(sys.argv) == 1:
+    # No arguments or the help parameter was given
+    if len(sys.argv) == 1 or sys.argv[1] in ("-h", "--help"):
         cmdHelp()
         return False
 
-    # The help parameter was given
-    if sys.argv[1] in ("-h", "--help"):
-        cmdHelp()
-        return False
-
-    # All the arguments required were not given
     try:
         axis = sys.argv[1]
         changeValue = sys.argv[2]
         inFile = sys.argv[3]
         outFile = sys.argv[4]
         return (axis, changeValue, inFile, outFile)
+
+        # All the arguments required were not given
     except IndexError:
         cmdHelp()
         return False
@@ -255,7 +277,7 @@ def main():
     arguments = commandLine()
     if arguments:
         gdbump = GDBump(arguments[0], arguments[1], arguments[2], arguments[3])
-        gdbump.changeValues()
+        gdbump.processFile()
         gdbump.writeFile()
         print('\n{0} updated "{1}" values saved to {2}'.format(
               gdbump.timesChanged, arguments[0], arguments[3]))
