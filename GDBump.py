@@ -42,7 +42,7 @@ class GDBump(object):
         self.outFile = os.path.abspath(outFile)
         self.timesChanged = 0
         self.linesChanged = []
-        self.__doReplace = False
+        self.__doReplace = self._replaceMode(changeValue)
         self.__fileContent = self._readFile()
         self.__prefixRegex = re.compile(r"(float|byte)")
         self.__commentRegex = re.compile(r"//.*")
@@ -62,13 +62,30 @@ class GDBump(object):
             self.__positions[self.axis]
         # That is not a valid axis
         except KeyError:
-            print("""
-Error!
-The axis chosen ("{0}") is not a valid axis!""".format(self.axis))
+            self._displayError('The axis chosen ("{0}") is not a valid axis!'
+                               .format(self.axis))
             raise SystemExit(1)
 
     def _displayError(self, msg):
+        """Report any errors.
 
+        @param {string} msg The error message to display.
+        @return {boolean} Always returns False.
+        """
+        print("\nError!\n{0}".format(msg))
+        return False
+
+    def _replaceMode(self, value):
+        """Enable replace mode.
+
+        If a number is given, False is always returned, as the
+        tilde character is obviously not a number.
+
+        @param {string|number} value The change value being used.
+        @return {boolean} True if replace mode is enabled, False otherwise.
+        """
+        if type(value) == str:
+            return value.startswith("~")
         return False
 
     def _convertToNumber(self, value):
@@ -84,7 +101,6 @@ The axis chosen ("{0}") is not a valid axis!""".format(self.axis))
         # Remove the replace operator
         if value.startswith("~"):
             value = value.lstrip("~")
-            self.__doReplace = True
 
         # Convert it to the proper type
         if value.find(".") > -1:
@@ -203,7 +219,6 @@ The axis chosen ("{0}") is not a valid axis!""".format(self.axis))
 
         @return {boolean} Always returns True.
         """
-
         # Scan just the first 10 lines
         for i in range(1, 10):
             parts = self._splitLine(self.__fileContent[i])

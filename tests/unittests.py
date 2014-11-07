@@ -47,7 +47,7 @@ class TestRunner(object):
     def processLines(self, shouldEqual):
         """Confirm the values were correctly changed."""
         if self.gdbump is not None:
-            print("it {0}.\n".format(self.msg))
+            print("\nit {0}.".format(self.msg))
             for i in range(0, len(self.gdbump.linesChanged)):
                 line = self.gdbump._splitLine(self.gdbump.linesChanged[i])[1]
                 value = shouldEqual[i]
@@ -65,9 +65,14 @@ def main():
     outFile = os.path.join(testDir, "y-axis-changed.txt")
     testRunner = TestRunner(inFile, outFile, "y")
 
-    # ******* Addition *******
     testRunner.changeTest(20, "should increase the values by 20")
     testRunner.processLines((0, -30, 0, -40))
+
+    testRunner.changeTest(-20, "should decrease the values by 20")
+    testRunner.processLines((-40, -70, -40, -80))
+
+    testRunner.changeTest("~20", "should replace all values with 20")
+    testRunner.processLines((20, 20, 20, 20))
 
     # Write the file and confirm it's length
     testRunner.gdbump.writeFile()
@@ -75,7 +80,7 @@ def main():
         with open(outFile, "rt") as f:
             numOfLines = f.readlines()
 
-        print("\nThere are {0} lines".format(len(numOfLines) + 1))
+        print("\nThere are {0} lines.".format(len(numOfLines) + 1))
         assert len(numOfLines) == 38, False
         testRunner.testsPassed += 1
 
