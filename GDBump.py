@@ -174,7 +174,7 @@ The axis chosen ("{0}") is not a valid axis!""".format(self.axis))
                 return self.changeValue
 
             # Bytes must be integers regardless
-            else if text == "(byte)":
+            elif text == "(byte)":
                 return int(value + self.changeValue)
             else:
                 return value + self.changeValue
