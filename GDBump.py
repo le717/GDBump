@@ -65,7 +65,6 @@ Error!
 The axis chosen ("{0}") is not a valid axis!""".format(self.axis))
             raise SystemExit(1)
 
-
     def _displayError(self, msg):
 
         return False
@@ -163,16 +162,22 @@ The axis chosen ("{0}") is not a valid axis!""".format(self.axis))
 
         @return {boolean} Always returns True.
         """
-        def _doMaths(value):
+        def _doMaths(text, value):
             """Perform the math(s) operation.
 
+            @param {string} text The format structure the value belonds to.
             @param {number} value The value to be changed or replaced.
             @return {number} The revised value.
             """
             # The replace operator was used
             if self.__doReplace:
                 return self.changeValue
-            return value + self.changeValue
+
+            # Bytes must be integers regardless
+            else if text == "(byte)":
+                return int(value + self.changeValue)
+            else:
+                return value + self.changeValue
 
         # Scan just the first 10 lines
         for i in range(1, 10):
@@ -180,7 +185,7 @@ The axis chosen ("{0}") is not a valid axis!""".format(self.axis))
 
             # Make sure we are on the correct line before math(s)
             if parts and i == self.__positions[self.axis]:
-                parts[1] = _doMaths(parts[1])
+                parts[1] = _doMaths(parts[0], parts[1])
 
                 # Merge the parts back together
                 newLine = self._joinLine(parts, i)
@@ -192,7 +197,7 @@ The axis chosen ("{0}") is not a valid axis!""".format(self.axis))
                        len(self.__fileContent), 9):
             parts = self._splitLine(self.__fileContent[i])
             if parts:
-                parts[1] = _doMaths(parts[1])
+                parts[1] = _doMaths(parts[0], parts[1])
                 newLine = self._joinLine(parts, i)
                 self.timesChanged += 1
                 self.linesChanged.append(newLine)
