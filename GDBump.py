@@ -23,7 +23,7 @@ class GDBump(object):
 
     """Main GDBump class."""
 
-    def __init__(self, axis, changeValue, inFile, outFile):
+    def __init__(self, axis, changeValue, inFile, outFile, test=False):
         """Initialize public and private properties.
 
         Exposes six public properties and two public methods:
@@ -43,6 +43,7 @@ class GDBump(object):
         self.outFile = os.path.abspath(outFile)
         self.timesChanged = 0
         self.linesChanged = []
+        self.__test = test
         self.__fileContent = self._readFile()
         self.__prefixRegex = re.compile(r"(float|byte)")
         self.__commentRegex = re.compile(r"//.*")
@@ -63,17 +64,24 @@ class GDBump(object):
         # That is not a valid axis
         except KeyError:
             self._displayError('The axis chosen ("{0}") is not a valid axis!'
-                               .format(self.axis))
-            raise SystemExit(1)
+                               .format(self.axis), True)
 
-    def _displayError(self, msg):
+    def _displayError(self, msg, shutdown=False):
         """Report any errors.
 
         @param {String} msg The error message to display.
         @return {Boolean} Always returns False.
         """
         print("\nError!\n{0}".format(msg))
-        return False
+
+        # Short-circuit parameter if we are runnning unit tests
+        if self.__test:
+            shutdown = False
+
+        if not shutdown:
+            return False
+        else:
+            raise SystemExit(1)
 
     def _convertToNumber(self, value):
         """Determine if a number is an integer or float.
@@ -111,8 +119,7 @@ class GDBump(object):
         @return {Array} Array contaning contents of source file.
         """
         if not os.path.exists(self.inFile):
-            self._displayError("{0} does not exist!".format(self.inFile))
-            raise SystemExit(1)
+            self._displayError("{0} does not exist!".format(self.inFile), True)
 
         with open(self.inFile, "rt") as f:
             lines = f.readlines()
@@ -225,7 +232,7 @@ class GDBump(object):
 
             # Make sure we are on the correct line before math(s)
             if parts and i == self.__positions[self.axis]:
-                parts[1] = self._changeValue(parts[0], parts[1])
+                parts[1] = self._changeValue(parts[0], parts[1], None)
 
                 # Merge the parts back together
                 newLine = self._joinLine(parts, i)
@@ -291,7 +298,8 @@ def main():
     print("\n{0}".format(const.appName))
     arguments = commandLine()
     if arguments:
-        gdbump = GDBump(arguments[0], arguments[1], arguments[2], arguments[3])
+        gdbump = GDBump(arguments[0], arguments[1],
+                        arguments[2], arguments[3], False)
         gdbump.processFile()
         gdbump.writeFile()
         print('\n{0} updated "{1}" values saved to {2}'.format(
