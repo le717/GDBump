@@ -34,15 +34,15 @@ class GDBump(object):
         * timesChanges: An integer stating the number of edits performed.
         * linesChanged: An array containing the changed lines.
         * processFile(): TODO.
-        * writeFile(): TODO.
+        * writeFile(): Saves the changes .GDB code to file.
         """
+        self.__doReplace = False
         self.axis = axis.lower()
-        self.changeValue = self._convertToNumber(changeValue)
+        self.changeValue = self._replaceMode(changeValue)
         self.inFile = os.path.abspath(inFile)
         self.outFile = os.path.abspath(outFile)
         self.timesChanged = 0
         self.linesChanged = []
-        self.__doReplace = self._replaceMode(changeValue)
         self.__fileContent = self._readFile()
         self.__prefixRegex = re.compile(r"(float|byte)")
         self.__commentRegex = re.compile(r"//.*")
@@ -69,38 +69,21 @@ class GDBump(object):
     def _displayError(self, msg):
         """Report any errors.
 
-        @param {string} msg The error message to display.
-        @return {boolean} Always returns False.
+        @param {String} msg The error message to display.
+        @return {Boolean} Always returns False.
         """
         print("\nError!\n{0}".format(msg))
-        return False
-
-    def _replaceMode(self, value):
-        """Enable replace mode.
-
-        If a number is given, False is always returned, as the
-        tilde character is obviously not a number.
-
-        @param {string|number} value The change value being used.
-        @return {boolean} True if replace mode is enabled, False otherwise.
-        """
-        if type(value) == str:
-            return value.startswith("~")
         return False
 
     def _convertToNumber(self, value):
         """Determine if a number is an integer or float.
 
-        @param {string} value The string to be converted to a number.
-        @return {number} An integer or float.
+        @param {String|Number} value The string to be converted to a number.
+        @return {Number} An integer or float.
         """
         # It is already a number
         if type(value) in (int, float):
             return value
-
-        # Remove the replace operator
-        if value.startswith("~"):
-            value = value.lstrip("~")
 
         # Convert it to the proper type
         if value.find(".") > -1:
@@ -109,13 +92,26 @@ class GDBump(object):
             value = int(value)
         return value
 
+    def _replaceMode(self, value):
+        """Enable replace mode.
+
+        @param {String|Number} value The change value being used.
+        @return {Number} Numeric version of the change value.
+        """
+        if type(value) == str:
+            # Remove the replace operator and enable replace mode
+            if value.startswith("~"):
+                value = value.lstrip("~")
+                self.__doReplace = True
+        return self._convertToNumber(value)
+
     def _readFile(self):
         """Read the source file.
 
-        @return {array} Array contaning contents of source file.
+        @return {Array} Array contaning contents of source file.
         """
         if not os.path.exists(self.inFile):
-            _displayError("{0} does not exist!".format(self.inFile))
+            self._displayError("{0} does not exist!".format(self.inFile))
             raise SystemExit(1)
 
         with open(self.inFile, "rt") as f:
@@ -125,7 +121,7 @@ class GDBump(object):
     def writeFile(self):
         """Write the destination file.
 
-        @return {boolean} Always returns True.
+        @return {Boolean} Always returns True.
         """
         with open(self.outFile, "wt") as f:
             f.write("".join(self.__fileContent))
@@ -134,8 +130,8 @@ class GDBump(object):
     def _splitLine(self, line):
         """Split a line into seperate parts suitable for editing.
 
-        @param {string} line The line to be split.
-        @return {list|Boolean} Three index list containing
+        @param {String} line The line to be split.
+        @return {Array|Boolean} Three index list containing
             the line's text, value, and comment (if any).
             False if the line could not be split.
         """
@@ -161,9 +157,9 @@ class GDBump(object):
     def _joinLine(self,  parts, pos):
         """Join the split parts of a line back together.
 
-        @param {array} parts The line sections to be merged.
-        @param {integer} pos The line number to update with the changed value.
-        @return {boolean} Returns the joined line.
+        @param {Array} parts The line sections to be merged.
+        @param {Integer} pos The line number to update with the changed value.
+        @return {String} Returns the joined line.
         """
         # Join the parts
         newLine = "{0}{1}".format(parts[0], parts[1])
@@ -188,10 +184,10 @@ class GDBump(object):
             This may produce unexpected results for you,
             but this is expected behavior for the game.
 
-            @param {string} text The format structure the value belonds to.
-            @param {number} value The value to be changed or replaced.
-            @param {number} structPos Optional, TODO.
-            @return {number} The revised value.
+            @param {String} text The format structure the value belonds to.
+            @param {Number} value The value to be changed or replaced.
+            @param {Number} structPos Optional, TODO.
+            @return {Number} The revised value.
             """
             # The replace operator was used
             if self.__doReplace:
@@ -221,7 +217,7 @@ class GDBump(object):
     def processFile(self):
         """TODO.
 
-        @return {boolean} Always returns True.
+        @return {Boolean} Always returns True.
         """
         # Scan just the first 10 lines
         for i in range(1, 10):
@@ -252,7 +248,7 @@ class GDBump(object):
 def commandLine():
     """Command-line arguments parser.
 
-    @return {tuple|boolean} A four index tuple containing the parameters given,
+    @return {Tuple|Boolean} A four index tuple containing the parameters given,
         False if all arguments were not passed or the help was invoked.
     """
     def cmdHelp():

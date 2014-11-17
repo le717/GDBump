@@ -80,7 +80,7 @@ def main():
         with open(outFile, "rt") as f:
             numOfLines = f.readlines()
 
-        print("\nThere are {0} lines.".format(len(numOfLines) + 1))
+        print("\nThere should {0} lines in the output file.".format(len(numOfLines) + 1))
         assert len(numOfLines) == 38, False
         testRunner.testsPassed += 1
 
