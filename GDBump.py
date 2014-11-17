@@ -114,6 +114,10 @@ class GDBump(object):
 
         @return {array} Array contaning contents of source file.
         """
+        if not os.path.exists(self.inFile):
+            _displayError("{0} does not exist!".format(self.inFile))
+            raise SystemExit(1)
+
         with open(self.inFile, "rt") as f:
             lines = f.readlines()
         return lines
