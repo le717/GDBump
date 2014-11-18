@@ -200,14 +200,13 @@ class GDBump(object):
             if self.__doReplace:
                 return self.changeValue
 
-            # Byte values must be integers regardless
-            elif text == "(byte)":
-                newValue = int(value + self.changeValue)
-
             # Python is cool by subtracting values with the plus sign
             # if the second addend is a negative number. :D
-            else:
-                newValue = value + self.changeValue
+            newValue = value + self.changeValue
+
+            # Byte values must be integers regardless
+            if text == "(byte)":
+                newValue = int(newValue)
 
             # We are editing RGBA color values
             if structPos is not None:
