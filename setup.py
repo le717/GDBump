@@ -41,7 +41,11 @@ if not os.path.exists(destfolder):
 
 build_exe_options = {
     "build_exe": destfolder,
-    "optimize": 2
+    "optimize": 2,
+    "include_files": [
+        "README.md",
+        "LICENSE"
+    ]
 }
 
 setup(
