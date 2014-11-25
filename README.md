@@ -5,16 +5,15 @@
 ## Usage ##
 ```
 GDBump.exe [Axis] [Change value] [Input file] [Output file]
-
-Axis: The axis you want to edit.
-Possible values are `x`, `y`, `z`, `tu`, `tv`, `r`, `g`, `b`, and `a`.
-Change value: The positive or negative value of your desired change.
-  Prefixing the value with a tilde (`~`) will replace all values
-  on the chosen axis with the value instead of editing them.
-Input file: Text file containing decoded GDB format structure,
-as decompiled using the LR1 Binary Editor.
-Output file: Destination text file for changed values.
 ```
+
+* Axis: The axis you want to edit.
+* Possible values are `x`, `y`, `z`, `tu`, `tv`, `r`, `g`, `b`, and `a`.
+* Change value: The positive or negative value of your desired change.
+  * Prefixing the value with a tilde (`~`) will replace all values on the chosen axis with the value instead of editing them.
+  * RGBa values will be clamped to valid ranges per format specifications.
+* Input file: Text file containing decoded .GDB format structure, as decompiled using the LR1 Binary Editor.
+* Output file: Destination text file for changed values.
 
 # Downloads ##
 All downloads are on the [Releases](https://github.com/le717/GDBump/releases) page.

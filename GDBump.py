@@ -234,7 +234,6 @@ class GDBump(object):
                     # Return the position of the offset + magic number 2
                     # so we start editing on the proper line
                     shouldEdit = i + 2
-        return shouldEdit
 
         # validLines = 0
         # Lines that begin with these characters cannot be edited
@@ -249,10 +248,11 @@ class GDBump(object):
             # Confirm the line starts correctly
             # match = self.__prefixRegex.search(line)
             # if match:
-               #  print("\nValid line found")
+                # print("\nValid line found")
                 # validLines += 1
             # print("\nvalidLines", validLines)
 
+        return shouldEdit
 
     def processFile(self):
         """TODO.
@@ -298,7 +298,8 @@ Axis: The axis you want to edit.
 Change value: The positive or negative value of your desired change.
     Prefixing the value with a tilde (~) will replace all values
     on the chosen axis with the value instead of editing them.
-Input file: Text file containing decoded GDB format structure,
+    RGBa values will be clamped to valid ranges per format specifications.
+Input file: Text file containing decoded .GDB format structure,
     as decompiled using the LR1 Binary Editor.
 Output file: Destination text file for changed values.
 """.format(const.exeName))
