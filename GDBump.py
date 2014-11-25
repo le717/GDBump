@@ -193,7 +193,7 @@ class GDBump(object):
 
             @param {String} text The format structure the value belonds to.
             @param {Number} value The value to be changed or replaced.
-            @param {Number} structPos Optional, TODO.
+            @param {Number} {Optional} structPos The type of value to be edited.
             @return {Number} The revised value.
             """
             # The replace operator was used
@@ -220,11 +220,52 @@ class GDBump(object):
                         newValue = 0
             return newValue
 
+    def _skipLines(self, fileArea=True):
+        """Skip lines that cannot be edited.
+
+        @param {Boolean} {Optional} fileArea The area of the file to skip.
+            Default True, the beginning of the file. False, end of the file.
+        @return {Number|False}
+        """
+        # We are at the beginning of the file
+        if fileArea:
+            for i in range(0, len(self.__fileContent)):
+                line = self.__fileContent[i].strip()
+
+                # k_2A is the offset we can begin editing
+                if "k_2A" in line:
+                    print("array index", i)
+                    return i
+#                    break
+
+        # validLines = 0
+        # Lines that begin with these characters cannot be edited
+        # if line[0] in ("{", "}", "[", "k"):
+            # continue
+        # else:
+            # Enough lines were found for editing
+            # if validLines >= 9:
+                # print("\nBreak\n")
+                # break
+
+            # Confirm the line starts correctly
+            # match = self.__prefixRegex.search(line)
+            # if match:
+               #  print("\nValid line found")
+                # validLines += 1
+            # print("\nvalidLines", validLines)
+
+
     def processFile(self):
         """TODO.
 
         @return {Boolean} Always returns True.
         """
+        # Skip the lines we cannot edit
+        startLine = self._skipLines(True)
+        
+        print(self.__fileContent[startLine])
+
         # Scan just the first 10 lines
         for i in range(1, 10):
             parts = self._splitLine(self.__fileContent[i])
@@ -244,6 +285,10 @@ class GDBump(object):
             parts = self._splitLine(self.__fileContent[i])
 
             if parts:
+                # Make sure we still have lines to edit
+                # self._skipLines(False)
+
+                # This is the same process as above
                 parts[1] = self._changeValue(parts[0], parts[1], structPos)
                 newLine = self._joinLine(parts, i)
                 self.timesChanged += 1

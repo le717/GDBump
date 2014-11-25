@@ -24,7 +24,7 @@ if sys.platform == "win32":
 
     # Do not freeze on x64 Python
     else:
-        input("""\n64-bit binaries are not frozen.
+        input("""\nA 64-bit binary is not frozen.
     Please freeze using 32-bit Python 3.3 or higher.""")
         raise SystemExit(0)
 
