@@ -28,13 +28,20 @@ class GDBump(object):
 
         Exposes six public properties and two public methods:
         * axis: The user's desired axis to edit, converted to lowercase.
-        * changeValue: The value the user wishes to increase or decrease by.
+        * changeValue: The value the user wishes to increase/decrease by
+            or replace with.
         * inFile: The user's input file containing the values to edit.
         * outFile: The user's desired destination file.
         * timesChanges: An integer stating the number of edits performed.
         * linesChanged: An array containing the changed lines.
-        * processFile(): TODO.
-        * writeFile(): Saves the changes .GDB code to file.
+        * processFile(): Manages and performs the actual editing.
+        * writeFile(): Saves the changed .GDB code to file.
+
+        @param {String|Number} axis
+        @param {String|Number} changeValue
+        @param {String} inFile
+        @param {String} outFile
+        @param {Boolean} [test=False] Overwrite certain actions for unit testing only.
         """
         self.__doReplace = False
         self.axis = axis.lower()
@@ -70,6 +77,8 @@ class GDBump(object):
         """Report any errors.
 
         @param {String} msg The error message to display.
+        @param {Boolean} [shutdown=False] Flag to close GDBump upon error.
+            For unit testing only!
         @return {Boolean} Always returns False.
         """
         print("\nError!\n{0}".format(msg))
@@ -161,7 +170,7 @@ class GDBump(object):
             return [text, value, comment]
         return False
 
-    def _joinLine(self,  parts, pos):
+    def _joinLine(self, parts, pos):
         """Join the split parts of a line back together.
 
         @param {Array} parts The line sections to be merged.
@@ -219,8 +228,8 @@ class GDBump(object):
     def _skipLines(self, fileArea=True):
         """Skip lines that cannot be edited.
 
-        @param {Boolean} {Optional} fileArea The area of the file to skip.
-            Default True, the beginning of the file. False, end of the file.
+        @param {Boolean} [fileArea=True] The area of the file to skip.
+            Default to the beginning of the file. False, end of the file.
         @return {Number|False}
         """
         # The end result of our actions
@@ -255,7 +264,7 @@ class GDBump(object):
         return shouldEdit
 
     def processFile(self):
-        """TODO.
+        """Manage and perform the actual editing.
 
         @return {Boolean} Always returns True.
         """
