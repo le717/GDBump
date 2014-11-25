@@ -182,42 +182,38 @@ class GDBump(object):
         self.__fileContent[pos] = newLine
         return newLine
 
-    def _changeValue(self, text, value, structPos=None):
+    def _changeValue(self, text, value, structPos):
             """Perform the math(s) operation.
 
             Any value requirements for the .GDB format will also be perfomed,
             including forcing byte values to be integers
-            and clamping RGBA values into valid ranges.
+            and clamping RGBa values into valid ranges.
             This may produce unexpected results for you,
             but this is expected behavior for the game.
 
             @param {String} text The format structure the value belonds to.
             @param {Number} value The value to be changed or replaced.
-            @param {Number} {Optional} structPos The type of value to be edited.
+            @param {Number} structPos The type of value to be edited.
             @return {Number} The revised value.
             """
             # The replace operator was used
             if self.__doReplace:
-                return self.changeValue
-
-            # Python is cool by subtracting values with the plus sign
-            # if the second addend is a negative number. :D
-            newValue = value + self.changeValue
+                newValue = self.changeValue
+            else:
+                # Python is cool by subtracting values with the plus sign
+                # if the second addend is a negative number. :D
+                newValue = value + self.changeValue
 
             # Byte values must be integers regardless
             if text == "(byte)":
                 newValue = int(newValue)
 
-            # We are editing RGBA color values
-            if structPos is not None:
-
-                # Clamp RGB (and alpha, oddly) values
-                # between 0-255 inclusive
-                if (structPos >= 6 and structPos <= 9):
-                    if newValue > 255:
-                        newValue = 255
-                    elif newValue < 0:
-                        newValue = 0
+            # Clamp RGBa values between 0-255 inclusive
+            if (structPos >= 6 and structPos <= 9):
+                if newValue > 255:
+                    newValue = 255
+                elif newValue < 0:
+                    newValue = 0
             return newValue
 
     def _skipLines(self, fileArea=True):
@@ -227,16 +223,18 @@ class GDBump(object):
             Default True, the beginning of the file. False, end of the file.
         @return {Number|False}
         """
+        # The end result of our actions
+        shouldEdit = False
+
         # We are at the beginning of the file
         if fileArea:
             for i in range(0, len(self.__fileContent)):
-                line = self.__fileContent[i].strip()
-
-                # k_2A is the offset we can begin editing
-                if "k_2A" in line:
-                    print("array index", i)
-                    return i
-#                    break
+                # k_2A denotes the section we can edit
+                if "k_2A" in self.__fileContent[i]:
+                    # Return the position of the offset + magic number 2
+                    # so we start editing on the proper line
+                    shouldEdit = i + 2
+        return shouldEdit
 
         # validLines = 0
         # Lines that begin with these characters cannot be edited
@@ -261,35 +259,22 @@ class GDBump(object):
 
         @return {Boolean} Always returns True.
         """
-        # Skip the lines we cannot edit
+        # Skip the lines we cannot edit,
+        # and make sure we edit the correct lines
         startLine = self._skipLines(True)
-        
-        print(self.__fileContent[startLine])
-
-        # Scan just the first 10 lines
-        for i in range(1, 10):
-            parts = self._splitLine(self.__fileContent[i])
-
-            # Make sure we are on the correct line before math(s)
-            if parts and i == self.__positions[self.axis]:
-                parts[1] = self._changeValue(parts[0], parts[1], None)
-
-                # Merge the parts back together
-                newLine = self._joinLine(parts, i)
-                self.timesChanged += 1
-                self.linesChanged.append(newLine)
-
-        # Now do the rest of the lines using the same process
         structPos = self.__positions[self.axis]
-        for i in range(9 + structPos, len(self.__fileContent), 9):
+
+        for i in range(startLine + structPos, len(self.__fileContent), 9):
             parts = self._splitLine(self.__fileContent[i])
 
             if parts:
                 # Make sure we still have lines to edit
                 # self._skipLines(False)
 
-                # This is the same process as above
+                # Do math(s)
                 parts[1] = self._changeValue(parts[0], parts[1], structPos)
+
+                # Merge the parts back together
                 newLine = self._joinLine(parts, i)
                 self.timesChanged += 1
                 self.linesChanged.append(newLine)
@@ -338,8 +323,8 @@ Output file: Destination text file for changed values.
 
 
 def main():
-    """Entry point for entire program."""
-    print("\n{0}".format(const.appName))
+    """Entry point for primary usage."""
+    print("\n{0} v{1}".format(const.appName, const.version))
     arguments = commandLine()
     if arguments:
         gdbump = GDBump(arguments[0], arguments[1],
