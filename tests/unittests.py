@@ -77,14 +77,14 @@ def main():
     except FileNotFoundError:
         testRunner.testsPassed += 1
 
-    testRunner.changeTest(20, "should increase the values by 20",
+    testRunner.changeTest(20, "should increase the '{0}' values by 20".format(testRunner.axis),
                           inFile=inFile)
     testRunner.processLines((0, -30, 0, -40))
 
-    testRunner.changeTest(-20, "should decrease the values by 20")
+    testRunner.changeTest(-20, "should decrease the '{0}' values by 20".format(testRunner.axis))
     testRunner.processLines((-40, -70, -40, -80))
 
-    testRunner.changeTest("~20", "should replace all values with 20")
+    testRunner.changeTest("~20", "should replace all '{0}' values with 20".format(testRunner.axis))
     testRunner.processLines((20, 20, 20, 20))
 
     # Write the output file and confirm it's length

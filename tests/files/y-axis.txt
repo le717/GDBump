@@ -1,6 +1,6 @@
 {
 	(float)20
-	(float)-20 // Entry 1
+	(float)-20    // Entry 1
 	(float)60
 	(float)0
 	(float)0
@@ -9,7 +9,7 @@
 	(byte)128
 	(byte)255
 	(float)20
-	(float)-50 // Entry 2
+	(float)-50    // Entry 2
 	(float)60
 	(float)0
 	(float)0
@@ -18,7 +18,7 @@
 	(byte)128
 	(byte)255
 	(float)200
-	(float)-20 // Entry 3
+	(float)-20    // Entry 3
 	(float)-100
 	(float)0
 	(float)0
@@ -27,7 +27,7 @@
 	(byte)128
 	(byte)255
 	(float)60
-	(float)-60 // Entry 4
+	(float)-60    // Entry 4
 	(float)-50
 	(float)0
 	(float)0
