@@ -1,0 +1,139 @@
+k_27    // Materials
+
+[1]
+{
+    "cr_mat"
+}
+k_33    // Scale
+(float)0.015625
+k_2A    // Vertices with Colors (X,Y,Z,TU,TV,R,G,B,A)
+[8]
+{
+    (float)400
+    (float)400
+    (float)400
+    (float)0
+    (float)0
+    (byte)0
+    (byte)0
+    (byte)0
+    (byte)255
+    (float)200
+    (float)400
+    (float)400
+    (float)0
+    (float)0
+    (byte)0
+    (byte)0
+    (byte)0
+    (byte)255
+    (float)400
+    (float)400
+    (float)200
+    (float)0
+    (float)0
+    (byte)0
+    (byte)0
+    (byte)0
+    (byte)255
+    (float)200
+    (float)400
+    (float)200
+    (float)0
+    (float)0
+    (byte)0
+    (byte)0
+    (byte)0
+    (byte)255
+    (float)400
+    (float)200
+    (float)400
+    (float)0
+    (float)0
+    (byte)0
+    (byte)0
+    (byte)0
+    (byte)255
+    (float)200
+    (float)200
+    (float)400
+    (float)0
+    (float)0
+    (byte)0
+    (byte)0
+    (byte)0
+    (byte)255
+    (float)400
+    (float)200
+    (float)200
+    (float)0
+    (float)0
+    (byte)0
+    (byte)0
+    (byte)0
+    (byte)255
+    (float)200
+    (float)200
+    (float)200
+    (float)0
+    (float)0
+    (byte)0
+    (byte)0
+    (byte)0
+    (byte)255
+}
+k_2D    // Indices
+[12]
+{
+    (byte)1 //Top
+    (byte)5
+    (byte)4
+    (byte)4
+    (byte)0
+    (byte)1
+    (byte)3 //Left
+    (byte)7
+    (byte)5
+    (byte)5
+    (byte)1
+    (byte)3
+    (byte)4 //Right
+    (byte)6
+    (byte)2
+    (byte)2
+    (byte)0
+    (byte)4
+    (byte)6 //Bottom
+    (byte)7
+    (byte)3
+    (byte)3
+    (byte)2
+    (byte)6
+    (byte)3 //Front
+    (byte)1
+    (byte)0
+    (byte)0
+    (byte)2
+    (byte)3
+    (byte)4 //Back
+    (byte)5
+    (byte)7
+    (byte)7
+    (byte)6
+    (byte)4
+}
+k_2E    // Indices Meta
+[4]
+{
+    k_27    // Material ID
+    (ushort)0
+    k_32    // Bone ID
+    (ushort)0
+    k_31    // Vertices Range
+    (byte)0
+    (ushort)0
+    (ushort)8
+    k_2D    // Indices Range
+    (ushort)0
+    (ushort)12
+}
