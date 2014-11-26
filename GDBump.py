@@ -228,40 +228,28 @@ class GDBump(object):
                     newValue = 0
             return newValue
 
-    def _canEdit(self, fileStart=False, curLine=None):
-        """Skip lines that cannot be edited.
+    def _areasToEdit(self):
+        """Determine the boundaries of the editing area.
 
-        @param {Boolean} [fileStart=False] Determine what kind of line checks
-            to perform in order to properly parse the file contents.
-            Default to check to continue editing,
-            True for start-of-file check.
-        @param {Number} [curLine=None] The current line number being processed.
-        @return {Number|Boolean} If fileStart is False, a Boolean value
-            denoting if editing should continue.
-            If fileStart is True, a number denoting the line where editing
-            should begin.s
+        @return {Array.<Number>} A two index array containing
+            the start and end points of the editing area, respectively.
         """
-        shouldEdit = True
-        if fileStart:
-            # k_2A denotes the beginning of the section we can edit
-            keyword = "k_2A"
-        else:
-            # k_2D denotes the beginning of the section we cannot edit
-            keyword = "k_2D"
+        boundaries = []
+        keywords = ("k_2A", "k_2D")
 
-        for i in range(0, len(self.__fileContent)):
-            if keyword in self.__fileContent[i]:
-                if fileStart:
-                    # Return the position of the offset + magic number 2
-                    # so we start editing on the proper line
-                    shouldEdit = i + 2
+        for keyword in keywords:
+            for i in range(0, len(self.__fileContent)):
+                if keyword in self.__fileContent[i]:
+                    if keyword == keywords[0]:
+                        # Mark the position of the offset + magic number 2
+                        # so we start editing on the proper line
+                        boundaries.append(i + 2)
 
-                # We have completed or exceeded the area we can edit
-                else:
-                    if curLine >= i:
-                        shouldEdit = False
-                        break
-        return shouldEdit
+                    # We have completed or exceeded the area we can edit
+                    elif keyword == keywords[1]:
+                        boundaries.append(i - 1)
+                    break
+        return boundaries
 
     def processFile(self):
         """Manage and perform the actual editing.
@@ -270,24 +258,18 @@ class GDBump(object):
         """
         # Skip the lines we cannot edit,
         # and make sure we edit the correct lines
-        startLine = self._canEdit(fileStart=True)
+        startLine, endLine = self._areasToEdit()
         structPos = self.__positions[self.axis]
 
-        for i in range(startLine + structPos, len(self.__fileContent), 9):
+        for i in range(startLine + structPos, endLine, 9):
             parts = self._splitLine(self.__fileContent[i])
             # Make sure we have lines to edit
             if parts:
-                # We are done here
-                if not self._canEdit(fileStart=False, curLine=i):
-                    break
-
-                # There are still lines to edit, do math(s)
-                else:
-                    # Merge the parts back together
-                    parts[1] = self._changeValue(parts[0], parts[1], structPos)
-                    newLine = self._joinLine(parts, i)
-                    self.timesChanged += 1
-                    self.linesChanged.append(newLine)
+                # Do math(s), merge the parts back together
+                parts[1] = self._changeValue(parts[0], parts[1], structPos)
+                newLine = self._joinLine(parts, i)
+                self.timesChanged += 1
+                self.linesChanged.append(newLine)
         return True
 
 
