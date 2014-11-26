@@ -18,16 +18,7 @@ import constants as const
 
 # Windows
 if sys.platform == "win32":
-    # This is x86 Python
-    if sys.maxsize < 2 ** 32:
-        destfolder = os.path.join("bin", "Windows")
-
-    # Do not freeze on x64 Python
-    else:
-        input("""\nA 64-bit binary is not frozen.
-    Please freeze using 32-bit Python 3.3 or higher.""")
-        raise SystemExit(0)
-
+    destfolder = os.path.join("bin", "Windows")
 # Mac OS X
 elif sys.platform == "darwin":
     destfolder = os.path.join("bin", "Mac OS X")

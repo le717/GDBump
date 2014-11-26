@@ -41,7 +41,8 @@ class GDBump(object):
         @param {String|Number} changeValue
         @param {String} inFile
         @param {String} outFile
-        @param {Boolean} [test=False] Overwrite certain actions for unit testing only.
+        @param {Boolean} [test=False] Overwrite certain actions
+            for unit testing only.
         """
         self.__doReplace = False
         self.axis = axis.lower()
