@@ -13,7 +13,7 @@ import os
 import sys
 
 appName = "GDBump"
-version = "0.7.0"
+version = "0.9.0"
 creator = "Triangle717"
 
 # Name and location of Exe/Py
