@@ -228,18 +228,11 @@ class GDBump(object):
                     newValue = 0
             return newValue
 
-    def _areasToEdit(self, fileStart=False, curLine=None):
-        """Skip lines that cannot be edited.
+    def _areasToEdit(self):
+        """Determine the boundaries of the editing area.
 
-        @param {Boolean} [fileStart=False] Determine what kind of line checks
-            to perform in order to properly parse the file contents.
-            Default to check to continue editing,
-            True for start-of-file check.
-        @param {Number} [curLine=None] The current line number being processed.
-        @return {Number|Boolean} If fileStart is False, a Boolean value
-            denoting if editing should continue.
-            If fileStart is True, a number denoting the line where editing
-            should begin.
+        @return {Array.<Number>} A two index array containing
+            the start and end points of the editing area, respectively.
         """
         boundaries = []
         keywords = ("k_2A", "k_2D")
@@ -265,7 +258,7 @@ class GDBump(object):
         """
         # Skip the lines we cannot edit,
         # and make sure we edit the correct lines
-        startLine, endLine = self._areasToEdit(fileStart=True)
+        startLine, endLine = self._areasToEdit()
         structPos = self.__positions[self.axis]
 
         for i in range(startLine + structPos, endLine, 9):
