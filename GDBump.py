@@ -228,15 +228,16 @@ class GDBump(object):
                     newValue = 0
             return newValue
 
-    def _skipLines(self, fileArea=True):
+    def _skipLines(self, fileArea=True, curLine=None):
         """Skip lines that cannot be edited.
 
         @param {Boolean} [fileArea=True] The area of the file to skip.
             Default to the beginning of the file. False, end of the file.
-        @return {Number|False}
+        @param {Number} [curLine=None] TODO.
+        @return {Number|Boolean}
         """
         # The end result of our actions
-        shouldEdit = False
+        shouldEdit = True
 
         # We are at the beginning of the file
         if fileArea:
@@ -247,23 +248,17 @@ class GDBump(object):
                     # so we start editing on the proper line
                     shouldEdit = i + 2
 
-        # validLines = 0
-        # Lines that begin with these characters cannot be edited
-        # if line[0] in ("{", "}", "[", "k"):
-            # continue
-        # else:
-            # Enough lines were found for editing
-            # if validLines >= 9:
-                # print("\nBreak\n")
-                # break
+        # We are currently processing the file
+        else:
+            if curLine is not None:
+                for i in range(0, len(self.__fileContent)):
+                    if "k_2D" in self.__fileContent[i]:
+                        stopIndex = i
+                        break
 
-            # Confirm the line starts correctly
-            # match = self.__prefixRegex.search(line)
-            # if match:
-                # print("\nValid line found")
-                # validLines += 1
-            # print("\nvalidLines", validLines)
-
+                # We have completed or exceeded the area we can edit
+                if curLine >= stopIndex:
+                    shouldEdit = False
         return shouldEdit
 
     def processFile(self):
@@ -273,23 +268,26 @@ class GDBump(object):
         """
         # Skip the lines we cannot edit,
         # and make sure we edit the correct lines
-        startLine = self._skipLines(True)
+        startLine = self._skipLines(fileArea=True)
         structPos = self.__positions[self.axis]
 
         for i in range(startLine + structPos, len(self.__fileContent), 9):
             parts = self._splitLine(self.__fileContent[i])
 
+            # Make sure we have lines to edit
             if parts:
-                # Make sure we still have lines to edit
-                # self._skipLines(False)
 
-                # Do math(s)
-                parts[1] = self._changeValue(parts[0], parts[1], structPos)
+                # We are done here
+                if not self._skipLines(fileArea=False, curLine=i):
+                    break
 
-                # Merge the parts back together
-                newLine = self._joinLine(parts, i)
-                self.timesChanged += 1
-                self.linesChanged.append(newLine)
+                # There are still lines to edit, do math(s)
+                else:
+                    # Merge the parts back together
+                    parts[1] = self._changeValue(parts[0], parts[1], structPos)
+                    newLine = self._joinLine(parts, i)
+                    self.timesChanged += 1
+                    self.linesChanged.append(newLine)
         return True
 
 
