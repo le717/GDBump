@@ -52,6 +52,7 @@ class GDBump(object):
         self.timesChanged = 0
         self.linesChanged = []
         self.__test = test
+        self.__indentSize = "\t"
         self.__fileContent = self._readFile()
         self.__prefixRegex = re.compile(r"(float|byte)")
         self.__commentRegex = re.compile(r"//.*")
@@ -155,7 +156,8 @@ class GDBump(object):
         # Confirm the line starts correctly
         match = self.__prefixRegex.search(line)
         if match:
-            # Get the text and the current value
+            # Get the indentation, line text, and current value
+            self.__indentSize = line[:line.find("(")]
             text = "({0})".format(match.group(0))
             value = line.strip().replace(text, "")
             comment = None
@@ -186,7 +188,7 @@ class GDBump(object):
             newLine = "{0}    {1}".format(newLine, parts[2])
 
         # Restore the indentation and trailing new line
-        newLine = "\t{0}\n".format(newLine)
+        newLine = "{0}{1}\n".format(self.__indentSize, newLine)
 
         # Update the file contents with the new line
         self.__fileContent[pos] = newLine
