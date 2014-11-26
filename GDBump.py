@@ -247,7 +247,7 @@ class GDBump(object):
             keyword = "k_2A"
         else:
             # k_2D denotes the beginning of the section we cannot edit
-            keyword ="k_2D"
+            keyword = "k_2D"
 
         for i in range(0, len(self.__fileContent)):
             if keyword in self.__fileContent[i]:
