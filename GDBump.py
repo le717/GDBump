@@ -228,37 +228,39 @@ class GDBump(object):
                     newValue = 0
             return newValue
 
-    def _skipLines(self, fileArea=True, curLine=None):
+    def _canEdit(self, fileStart=False, curLine=None):
         """Skip lines that cannot be edited.
 
-        @param {Boolean} [fileArea=True] The area of the file to skip.
-            Default to the beginning of the file. False, end of the file.
-        @param {Number} [curLine=None] TODO.
-        @return {Number|Boolean}
+        @param {Boolean} [fileStart=False] Determine what kind of line checks
+            to perform in order to properly parse the file contents.
+            Default to check to continue editing,
+            True for start-of-file check.
+        @param {Number} [curLine=None] The current line number being processed.
+        @return {Number|Boolean} If fileStart is False, a Boolean value
+            denoting if editing should continue.
+            If fileStart is True, a number denoting the line where editing
+            should begin.s
         """
-        # The end result of our actions
         shouldEdit = True
+        if fileStart:
+            # k_2A denotes the beginning of the section we can edit
+            keyword = "k_2A"
+        else:
+            # k_2D denotes the beginning of the section we cannot edit
+            keyword ="k_2D"
 
-        # We are at the beginning of the file
-        if fileArea:
-            for i in range(0, len(self.__fileContent)):
-                # k_2A denotes the section we can edit
-                if "k_2A" in self.__fileContent[i]:
+        for i in range(0, len(self.__fileContent)):
+            if keyword in self.__fileContent[i]:
+                if fileStart:
                     # Return the position of the offset + magic number 2
                     # so we start editing on the proper line
                     shouldEdit = i + 2
 
-        # We are currently processing the file
-        else:
-            if curLine is not None:
-                for i in range(0, len(self.__fileContent)):
-                    if "k_2D" in self.__fileContent[i]:
-                        stopIndex = i
-                        break
-
                 # We have completed or exceeded the area we can edit
-                if curLine >= stopIndex:
-                    shouldEdit = False
+                else:
+                    if curLine >= i:
+                        shouldEdit = False
+                        break
         return shouldEdit
 
     def processFile(self):
@@ -268,17 +270,15 @@ class GDBump(object):
         """
         # Skip the lines we cannot edit,
         # and make sure we edit the correct lines
-        startLine = self._skipLines(fileArea=True)
+        startLine = self._canEdit(fileStart=True)
         structPos = self.__positions[self.axis]
 
         for i in range(startLine + structPos, len(self.__fileContent), 9):
             parts = self._splitLine(self.__fileContent[i])
-
             # Make sure we have lines to edit
             if parts:
-
                 # We are done here
-                if not self._skipLines(fileArea=False, curLine=i):
+                if not self._canEdit(fileStart=False, curLine=i):
                     break
 
                 # There are still lines to edit, do math(s)
