@@ -85,7 +85,7 @@ class GDBump(object):
         """
         print("\nError!\n{0}".format(msg))
 
-        # Short-circuit parameter if we are runnning unit tests
+        # Short-circuit parameter if we are running unit tests
         if self.__test:
             shutdown = False
 
@@ -127,7 +127,7 @@ class GDBump(object):
     def _readFile(self):
         """Read the source file.
 
-        @return {Array} Array contaning contents of source file.
+        @return {Array} Array containing contents of source file.
         """
         if not os.path.exists(self.inFile):
             self._displayError("{0} does not exist!".format(self.inFile), True)
@@ -146,7 +146,7 @@ class GDBump(object):
         return True
 
     def _splitLine(self, line):
-        """Split a line into seperate parts suitable for editing.
+        """Split a line into separate parts suitable for editing.
 
         @param {String} line The line to be split.
         @return {Array|Boolean} Three index list containing
@@ -197,13 +197,13 @@ class GDBump(object):
     def _changeValue(self, text, value, structPos):
             """Perform the math(s) operation.
 
-            Any value requirements for the .GDB format will also be perfomed,
+            Any value requirements for the .GDB format will also be performed,
             including forcing byte values to be integers
             and clamping RGBa values into valid ranges.
             This may produce unexpected results for you,
             but this is expected behavior for the game.
 
-            @param {String} text The format structure the value belonds to.
+            @param {String} text The format structure the value belongs to.
             @param {Number} value The value to be changed or replaced.
             @param {Number} structPos The type of value to be edited.
             @return {Number} The revised value.
