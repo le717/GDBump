@@ -5,6 +5,7 @@ python:
 
 install: pip install -r requirements.txt
 script:
+  # Lint
   - flake8 GDBump.py
   - flake8 constants.py
   - flake8 setup.py

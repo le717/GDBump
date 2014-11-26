@@ -48,48 +48,62 @@ class TestRunner(object):
                                     self.inFile, self.outFile, test=True)
         self.gdbump.processFile()
 
-    def processLines(self, shouldEqual):
+    def confirmLines(self, shouldEqual=(0)):
         """Confirm the values were correctly changed."""
         if self.gdbump is not None:
-            print("\nit {0}.".format(self.msg))
+            print("\nIt {0}.".format(self.msg))
+
             for i in range(0, len(self.gdbump.linesChanged)):
                 line = self.gdbump._splitLine(self.gdbump.linesChanged[i])[1]
                 value = shouldEqual[i]
 
-                print('"{0}" should equal  "{1}"'.format(line, value))
+                print('"{0}" should equal "{1}"'.format(line, value))
                 assert line == value, False
-                self.testsPassed += 1
+            self.testsPassed += 1
         return True
 
 
 def main():
-
+    """Entry point for running tests."""
     testDir = os.path.join(os.getcwd(), "files")
-    inFile = os.path.join(testDir, "y-axis.txt")
-    outFile = os.path.join(testDir, "y-axis-changed.txt")
+    inFile = os.path.join(testDir, "box.txt")
+    outFile = os.path.join(testDir, "box-edited.txt")
     testRunner = TestRunner(inFile, outFile, "y")
 
     try:
         # Make sure input file exists
         testRunner.changeTest(20, "should error from non-existant file",
-                              inFile=os.path.join(testDir, "y-axis-not.txt"))
-        testRunner.processLines((0, 0, 0, 0))
+                              inFile=os.path.join(testDir, "not-exists.txt"))
+        testRunner.confirmLines()
     except FileNotFoundError:
         testRunner.testsPassed += 1
 
     testRunner.changeTest(20, "should increase the '{0}' values by 20".format(
         testRunner.axis), inFile=inFile)
-    testRunner.processLines((0, -30, 0, -40))
+    testRunner.confirmLines((420, 420, 420, 420, 220, 220, 220, 220))
 
     testRunner.changeTest(-20, "should decrease the '{0}' values by 20".format(
         testRunner.axis))
-    testRunner.processLines((-40, -70, -40, -80))
+    testRunner.confirmLines((380, 380, 380, 380, 180, 180, 180, 180))
 
     testRunner.changeTest("~20",
                           "should replace all '{0}' values with 20"
                           .format(testRunner.axis)
                           )
-    testRunner.processLines((20, 20, 20, 20))
+    testRunner.confirmLines((20, 20, 20, 20, 20, 20, 20, 20))
+
+    testRunner.changeTest(39, "should increase the 'b' color value to 39",
+                          axis="b")
+    testRunner.confirmLines((39, 39, 39, 39, 39, 39, 39, 39))
+
+    testRunner.changeTest(-20, "should clamp the '{0}' color value to 0".format
+                          (testRunner.axis))
+    testRunner.confirmLines((0, 0, 0, 0, 0, 0, 0, 0))
+
+    testRunner.changeTest(300,
+                          "should clamp the '{0}' color value to 255".format
+                          (testRunner.axis))
+    testRunner.confirmLines((255, 255, 255, 255, 255, 255, 255, 255))
 
     # Write the output file and confirm it's length
     testRunner.gdbump.writeFile()
@@ -99,7 +113,7 @@ def main():
 
         print("\nThere should {0} lines in the output file.".format(
               len(numOfLines) + 1))
-        assert len(numOfLines) == 38, False
+        assert len(numOfLines) == 139, False
         testRunner.testsPassed += 1
 
     print()

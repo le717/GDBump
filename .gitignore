@@ -108,5 +108,5 @@ target/
 [Bb]in
 Testing/
 Archives/
-tests/files/*-changed.txt
+tests/files/*-edited.txt
 *.json
